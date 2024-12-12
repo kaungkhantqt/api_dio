@@ -29,3 +29,15 @@ Future<User?> getAllUser(String token, int skip) async {
     return null;
   }
 }
+
+Future<int?> addUser(String firstName, String lastName, int age, String gender,
+    String email) async {
+  var response = await dio.post("/users/add", data: {
+    "firstName": firstName,
+    "lastName": lastName,
+    "age": age,
+    "gender": gender,
+    "email": email
+  });
+ return response.statusCode;
+}

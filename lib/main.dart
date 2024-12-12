@@ -4,7 +4,11 @@ import 'package:inter_day1/screens/users_screen.dart';
 import 'package:inter_day1/service/api_service.dart';
 import 'package:inter_day1/util/m_sharepreference.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  MyShare.init();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -37,7 +41,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  GlobalKey<FormState> _key = GlobalKey();
+  final GlobalKey<FormState> _key = GlobalKey();
   @override
   void initState() {
     super.initState();
@@ -45,8 +49,20 @@ class _BodyState extends State<Body> {
     passwordController.text = "emilyspass";
   }
 
+  goToUserPage(String token) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (_) => UsersScreen(token: token)));
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        if (MyShare.getToken() != '') {
+          goToUserPage(MyShare.getToken());
+        }
+      },
+    );
     return Form(
       key: _key,
       child: Padding(
@@ -111,19 +127,14 @@ class _BodyState extends State<Body> {
                   if (mLogin == null) {
                     showMyDialog();
                   } else {
-                    await MyShare.init();
-                    await MyShare.addLogin(mLogin);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                UsersScreen(token: mLogin.accessToken)));
+                    MyShare.addLogin(mLogin);
+                    goToUserPage(mLogin.accessToken);
                   }
                 }
               },
-              child: const Text("LOGIN"),
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, foregroundColor: Colors.white),
+              child: const Text("LOGIN"),
             )
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inter_day1/model/user.dart';
+import 'package:inter_day1/screens/add_user_screen.dart';
 import 'package:inter_day1/service/api_service.dart';
 
 class UsersScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   void initState() {
     super.initState();
+    //print(widget.token);
     getUsers();
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
@@ -36,6 +38,8 @@ class _UsersScreenState extends State<UsersScreen> {
       isLoading = true;
     });
     User? user = await getAllUser(widget.token, skip);
+    // print("run getUserfun");
+    // print("users $user");
     users.addAll(user!.users);
     totalUser = user.total;
     skip += user.limit;
@@ -83,6 +87,15 @@ class _UsersScreenState extends State<UsersScreen> {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const AddUserScreen()));
+        },
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
